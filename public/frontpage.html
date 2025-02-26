@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontpage</title>
+    <!-- 3. link to External stylesheets-->
+    <!-- <link rel="stylesheet" href="./frontpage.css"> -->
+    <!--2. CSS in style tag-->
+    <style>
+        #frontpage-header {
+            color: red;
+        }
+        .headers { 
+            background-color: grey;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="frontpage-header" class="headers">Frontpage</h1>
+
+
+    <h2 class="headers" style="color: blue">On This Day in History</h2>
+    <div id="historyEvents"></div>
+
+    <script>
+       
+        // Fetch historical events and display them
+        fetch('/history')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                // Check if data has events and display them
+                if (data && data.data.Events.length > 0) {
+                    let eventsHTML = '<ul>';
+                    data.data.Events.forEach(event => {
+                        eventsHTML += `<li><strong>${event.year}:</strong> ${event.text}</li>`;
+                    });
+                    eventsHTML += '</ul>';
+                    document.getElementById('historyEvents').innerHTML = eventsHTML;
+                } else {
+                    document.getElementById('historyEvents').textContent = 'No historical events found for today.';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    </script>
+</body>
+</html>
