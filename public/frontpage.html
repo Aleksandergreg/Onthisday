@@ -1,64 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Frontpage</title>
-    <!-- 3. link to External stylesheets-->
-    <!-- <link rel="stylesheet" href="./frontpage.css"> -->
-    <!--2. CSS in style tag-->
-    <style>
-        #frontpage-header {
-            color: red;
-        }
-        .headers { 
-            background-color: grey;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frontpage</title>
+  <style>
+    /* Global Styles */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      line-height: 1.6;
+      transition: background-color 0.5s ease;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    header {
+      text-align: center;
+      padding: 20px;
+      border-bottom: 2px solid #ccc;
+    }
+    
+    header h1 {
+      margin: 0;
+      font-size: 3em;
+      color: #d32f2f;
+    }
+    
+    #greeting {
+      font-size: 2em;
+      margin-top: 10px;
+      color: #555;
+    }
+    
+    h2.section-title {
+      font-size: 1.8em;
+      color: #1565c0;
+      margin-top: 40px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 10px;
+    }
+    
+    #historyEvents {
+      margin-top: 20px;
+    }
+    
+    #historyEvents ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    
+    #historyEvents li {
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    #historyEvents li strong {
+      color: #333;
+    }
+    
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 2.5em;
+      }
+      #greeting {
+        font-size: 1.5em;
+      }
+      h2.section-title {
+        font-size: 1.5em;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h1 id="frontpage-header" class="headers">Frontpage</h1>
-    <p>Welcome to this simple site showing what happened on this very day</p>
-
-
-    <h2 class="headers" style="color: blue">On This Day in History</h2>
-    <div id="historyEvents"></div>
-
-    <script>
-       
-       fetch('/history')
-    .then(response => response.json())
-    .then(data => {
-        console.log(data);
+  <div class="container">
+    <header>
+      <div id="greeting"></div>
+    </header>
+    
+    <section>
+      <h2 class="section-title">On This Day in History</h2>
+      <div id="historyEvents"></div>
+    </section>
+  </div>
+  
+  <script>
+    function setTimeBasedGreeting() {
+      const now = new Date();
+      const hour = now.getHours();
+      const greetingElement = document.getElementById("greeting");
+      let greetingMessage = "";
+      let backgroundColor = "";
+      
+      if (hour >= 5 && hour < 12) {
+        greetingMessage = "Good Morning!";
+        backgroundColor = "#FFFAF0";
+      } else if (hour >= 12 && hour < 17) {
+        greetingMessage = "Good Afternoon!";
+        backgroundColor = "#F0E68C"; 
+      } else if (hour >= 17 && hour < 21) {
+        greetingMessage = "Good Evening!";
+        backgroundColor = "#ADD8E6"; 
+      } else {
+        greetingMessage = "Good Night!";
+        backgroundColor = "#2F4F4F"; 
+      }
+      
+      greetingElement.textContent = greetingMessage;
+      document.body.style.backgroundColor = backgroundColor;
+    }
+    
+    setTimeBasedGreeting();
+    
+    // Fetch historical events and display them safely
+    fetch('/history')
+      .then(response => response.json())
+      .then(data => {
         const historyEventsElement = document.getElementById('historyEvents');
-        
         historyEventsElement.textContent = '';
         
         if (data && data.data.Events && data.data.Events.length > 0) {
-            const ulElement = document.createElement('ul');
-            
-            data.data.Events.forEach(event => {
-                const liElement = document.createElement('li');
-                
-                const strongElement = document.createElement('strong');
-                strongElement.textContent = event.year + ': ';
-                
-                liElement.appendChild(strongElement);
-                
-                liElement.appendChild(document.createTextNode(event.text));
-                
-                ulElement.appendChild(liElement);
-            });
-            
-            historyEventsElement.appendChild(ulElement);
+          const ulElement = document.createElement('ul');
+          data.data.Events.forEach(event => {
+            const liElement = document.createElement('li');
+            const strongElement = document.createElement('strong');
+            strongElement.textContent = event.year + ': ';
+            liElement.appendChild(strongElement);
+            liElement.appendChild(document.createTextNode(event.text));
+            ulElement.appendChild(liElement);
+          });
+          historyEventsElement.appendChild(ulElement);
         } else {
-            historyEventsElement.textContent = 'No historical events found for today.';
+          historyEventsElement.textContent = 'No historical events found for today.';
         }
-    })
-    .catch(error => {
+      })
+      .catch(error => {
         console.error('Error:', error);
         document.getElementById('historyEvents').textContent = 'Error loading historical events.';
-    });
-    </script>
+      });
+  </script>
 </body>
 </html>
