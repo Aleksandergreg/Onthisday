@@ -18,6 +18,7 @@
 </head>
 <body>
     <h1 id="frontpage-header" class="headers">Frontpage</h1>
+    <p>Welcome to this simple site showing what happened on this very day</p>
 
 
     <h2 class="headers" style="color: blue">On This Day in History</h2>
@@ -25,24 +26,39 @@
 
     <script>
        
-        // Fetch historical events and display them
-        fetch('/history')
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                // Check if data has events and display them
-                if (data && data.data.Events.length > 0) {
-                    let eventsHTML = '<ul>';
-                    data.data.Events.forEach(event => {
-                        eventsHTML += `<li><strong>${event.year}:</strong> ${event.text}</li>`;
-                    });
-                    eventsHTML += '</ul>';
-                    document.getElementById('historyEvents').innerHTML = eventsHTML;
-                } else {
-                    document.getElementById('historyEvents').textContent = 'No historical events found for today.';
-                }
-            })
-            .catch(error => console.error('Error:', error));
+       fetch('/history')
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        const historyEventsElement = document.getElementById('historyEvents');
+        
+        historyEventsElement.textContent = '';
+        
+        if (data && data.data.Events && data.data.Events.length > 0) {
+            const ulElement = document.createElement('ul');
+            
+            data.data.Events.forEach(event => {
+                const liElement = document.createElement('li');
+                
+                const strongElement = document.createElement('strong');
+                strongElement.textContent = event.year + ': ';
+                
+                liElement.appendChild(strongElement);
+                
+                liElement.appendChild(document.createTextNode(event.text));
+                
+                ulElement.appendChild(liElement);
+            });
+            
+            historyEventsElement.appendChild(ulElement);
+        } else {
+            historyEventsElement.textContent = 'No historical events found for today.';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('historyEvents').textContent = 'Error loading historical events.';
+    });
     </script>
 </body>
 </html>
